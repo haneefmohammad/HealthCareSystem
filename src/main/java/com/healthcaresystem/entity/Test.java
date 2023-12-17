@@ -1,16 +1,22 @@
 package com.healthcaresystem.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 
 @Entity
@@ -25,31 +31,17 @@ public class Test {
 	@Column(name="test_name")
 	private String testName;
 	
-	@ManyToOne
-	@JoinColumn(name = "center_id")
-    private DiagnosticCenter diagnosticCenter;
+//	@ManyToOne
+//	@JoinColumn(name = "center_id")
+	@ManyToMany(mappedBy = "listOfTests",cascade = CascadeType.ALL)
+    private  List<DiagnosticCenter> diagnosticCenter = new ArrayList<>();
 	
-	@ManyToOne
-	@JoinColumn(name = "appointment_id")
+	@OneToMany(mappedBy ="test" ,cascade = CascadeType.ALL)
 	@JsonIgnore
-    private Appointment appointment;
+    private List<Appointment> appointment;
 	
 
-	public Appointment getAppointment() {
-		return appointment;
-	}
-
-	public void setAppointment(Appointment appointment) {
-		this.appointment = appointment;
-	}
-
-	public DiagnosticCenter getDiagnosticCenter() {
-		return diagnosticCenter;
-	}
-
-	public void setDiagnosticCenter(DiagnosticCenter diagnosticCenter) {
-		this.diagnosticCenter = diagnosticCenter;
-	}
+	
 
 	public int getTestId() {
 		return testId;
@@ -67,22 +59,44 @@ public class Test {
 		this.testName = testName;
 	}
 
-	
+	public List<DiagnosticCenter> getDiagnosticCenter() {
+		return diagnosticCenter;
+	}
 
-	public Test(int testId, String testName, DiagnosticCenter diagnosticCenter) {
+	public void setDiagnosticCenter(List<DiagnosticCenter> diagnosticCenter) {
+		this.diagnosticCenter = diagnosticCenter;
+	}
+
+	public List<Appointment> getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(List<Appointment> appointment) {
+		this.appointment = appointment;
+	}
+
+	public Test(int testId, String testName, List<DiagnosticCenter> diagnosticCenter) {
 		super();
 		this.testId = testId;
 		this.testName = testName;
 		this.diagnosticCenter = diagnosticCenter;
 	}
 	
-	public Test( String testName, DiagnosticCenter diagnosticCenter) {
+	public Test( String testName, List<DiagnosticCenter> diagnosticCenter) {
 		super();
 		
 		this.testName = testName;
 		this.diagnosticCenter = diagnosticCenter;
 	}
 	
+
+	public Test(int testId, String testName, List<DiagnosticCenter> diagnosticCenter, List<Appointment> appointment) {
+		super();
+		this.testId = testId;
+		this.testName = testName;
+		this.diagnosticCenter = diagnosticCenter;
+		this.appointment = appointment;
+	}
 
 	public Test( String testName) {
 		super();

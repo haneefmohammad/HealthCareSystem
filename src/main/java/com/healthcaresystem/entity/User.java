@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,7 +46,7 @@ public class User {
 	@Column(name = "age")
 	private int age;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	private Appointment appointment;
 
 	@Column(name = "gender")

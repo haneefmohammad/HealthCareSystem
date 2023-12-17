@@ -13,7 +13,7 @@ public class MakeAppointmentDTO {
 	
 	private int userId;
 	private int centerId;
-	private List<Test> testIds;
+	private int testId;
 	private LocalDateTime dateTime;
 	public int getUserId() {
 		return userId;
@@ -27,11 +27,12 @@ public class MakeAppointmentDTO {
 	public void setCenterId(int centerId) {
 		this.centerId = centerId;
 	}
-	public List<Test> getTestIds() {
-		return testIds;
+	
+	public int getTestId() {
+		return testId;
 	}
-	public void setTestId(List<Test> testIds) {
-		this.testIds = testIds;
+	public void setTestId(int testId) {
+		this.testId = testId;
 	}
 	public LocalDateTime getDateTime() {
 		return dateTime;
@@ -39,11 +40,11 @@ public class MakeAppointmentDTO {
 	public void setDateTime(LocalDateTime dateTime) {
 		this.dateTime = dateTime;
 	}
-	public MakeAppointmentDTO(int userId, int centerId, List<Test> testIds, LocalDateTime dateTime) {
+	public MakeAppointmentDTO(int userId, int centerId, int testId, LocalDateTime dateTime) {
 		super();
 		this.userId = userId;
 		this.centerId = centerId;
-		this.testIds = testIds;
+		this.testId = testId;
 		this.dateTime = dateTime;
 	}
 	public MakeAppointmentDTO() {
@@ -51,7 +52,7 @@ public class MakeAppointmentDTO {
 	}
 	@Override
 	public String toString() {
-		return "MakeAppointmentDTO [userId=" + userId + ", centerId=" + centerId + ", testId=" + testIds + ", dateTime="
+		return "MakeAppointmentDTO [userId=" + userId + ", centerId=" + centerId + ", testId=" + testId + ", dateTime="
 				+ dateTime + "]";
 	}
 	

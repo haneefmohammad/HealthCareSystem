@@ -13,10 +13,11 @@ public interface TestRepository extends JpaRepository<Test, Integer> {
 
 	//List<Test> findByCenter(String centreName);
 
-	 List<Test> findByDiagnosticCenter(DiagnosticCenter diagnosticCenter);
+	List<Test> findByDiagnosticCenter(DiagnosticCenter diagnosticCenter);
 	//List<Test> findByCenterAndTestName(DiagnosticCenter diagnosticCenter, String testName);
 	
 	//List<Test> findByCenterId(int centreId);
+	Test findByTestNameIgnoreCase(String testName);
 	
 	
 	

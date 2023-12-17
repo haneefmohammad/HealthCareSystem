@@ -46,45 +46,13 @@ public class CustomerController {
 
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody UserDTO user) {
-		try {
-			String message = userService.registerNewUser(user);
-			user.getUserName();
-			user.getUserPassword();
-			user.getUserEmail();
-			user.getAge();
-			user.getGender();
-			user.getPhoneNumber();
-
-			return ResponseEntity.status(HttpStatus.CREATED).body(message);
-		} catch (InvalidPasswordException | InvalidPhoneNumberException | InvalidUserNameException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		} catch (UserException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error");
-		}
-
+		return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerNewUser(user));
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody Map<String, String> credentials) {
-		String userEmail = credentials.get("email");
-		String userPassword = credentials.get("password");
+		return ResponseEntity.status(HttpStatus.OK).body(userService.loginUser(credentials));
 
-		System.out.println(userEmail + " " + userPassword);
-
-		try {
-			String loginStatus = userService.loginUser(userEmail, userPassword);
-
-			if (loginStatus.equals("Login Successful")) {
-				return ResponseEntity.status(HttpStatus.ACCEPTED).body(loginStatus);
-			} else {
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginStatus);
-			}
-		} catch (UserNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-		} catch (InvalidLoginException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-
-		}
 	}
 
 	@PutMapping("/updateDetails/{userId}")
@@ -95,21 +63,8 @@ public class CustomerController {
 
 	@PostMapping("/login/makeAppointment")
 	public ResponseEntity<String> makeAppointment(@RequestBody MakeAppointmentDTO makeAppointmentDTO) {
-
-		System.out.println(makeAppointmentDTO);
-		
-		int userId = makeAppointmentDTO.getUserId();
-		int centerId = makeAppointmentDTO.getCenterId();
-		List<Test> testIds = makeAppointmentDTO.getTestIds();
-		LocalDateTime appointmentDate = makeAppointmentDTO.getDateTime();
-		System.out.println(makeAppointmentDTO);
-		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User Id not found"));
-		DiagnosticCenter diagnosticCenter = diagnosticCenterRepository.findByCenterId(centerId)
-				.orElseThrow(() -> new DiagnosticCenterNotFoundException("Center id not found"));
-
-		System.out.println(makeAppointmentDTO.getDateTime());
-		appointmentService.makeAppointment(user, diagnosticCenter, testIds, appointmentDate);
-		return ResponseEntity.ok("Appointment Added Successfully");
+	appointmentService.makeAppointment(makeAppointmentDTO);
+		return ResponseEntity.ok("Appointment  Added Successfully");
 
 	}
 

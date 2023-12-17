@@ -40,12 +40,12 @@ public class Appointment {
 	//@JsonManagedReference(value= "diagnostic_center")
 	private DiagnosticCenter diagnosticCenter;
 	
-	@OneToOne
+	@OneToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "user_id")			
 	private User user;
 	
-	@OneToMany(mappedBy = "appointment",cascade = CascadeType.ALL)
-	private List<Test> listOfTests =new ArrayList<>();
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	private Test test;
 
 	
 	
@@ -101,23 +101,31 @@ public class Appointment {
 		this.user = user;
 	}
 
-	public List<Test> getlistOfTests() {
-		return listOfTests;
+	public Test getTest() {
+		return test;
 	}
 
-	public void setlistOfTests(List<Test> listOfTests) {
-		this.listOfTests = listOfTests;
+	public void setTest(Test test) {
+		this.test = test;
 	}
-
-	public Appointment(int appointmentId, LocalDateTime dateTime, Boolean approved,
-			DiagnosticCenter diagnosticCenter, User user, List<Test> listOfTests) {
+	public Appointment(int appointmentId, LocalDateTime dateTime, boolean approved, DiagnosticCenter diagnosticCenter,
+			User user, Test test) {
 		super();
 		this.appointmentId = appointmentId;
 		this.dateTime = dateTime;
 		this.approved = approved;
 		this.diagnosticCenter = diagnosticCenter;
 		this.user = user;
-		this.listOfTests = listOfTests;
+		this.test = test;
 	}
+
+	@Override
+	public String toString() {
+		return "Appointment [appointmentId=" + appointmentId + ", dateTime=" + dateTime + ", approved=" + approved
+				+ ", diagnosticCenter=" + diagnosticCenter + ", user=" + user + ", test=" + test + "]";
+	}
+
+
+	
 
 }

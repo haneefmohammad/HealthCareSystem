@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.healthcaresystem.entity.DiagnosticCenter;
 import com.healthcaresystem.entity.Test;
 import com.healthcaresystem.entity.User;
+import com.healthcaresystem.dto.MakeAppointmentDTO;
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.exception.AppointmentNotFoundException;
 import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
@@ -38,50 +39,58 @@ public class AppointmentService {
 	@Autowired
 	private AppointmentRepository appointmentRepository;
 
-	public void makeAppointment(User user, DiagnosticCenter diagnosticCenter, List<Test> test,
-			LocalDateTime appointmentDate) {
+	public void makeAppointment(MakeAppointmentDTO makeAppointmentDTO) {
+
+
+		int userId = makeAppointmentDTO.getUserId();
+		int centerId = makeAppointmentDTO.getCenterId();
+		int testId = makeAppointmentDTO.getTestId();
+		LocalDateTime appointmentDate = makeAppointmentDTO.getDateTime();
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User Id not found"));
+		DiagnosticCenter diagnosticCenter = diagnosticCenterRepository.findById(centerId)
+				.orElseThrow(() -> new DiagnosticCenterNotFoundException("Center id not found"));
 
 		Optional<User> existingUser = userRepository.findById(user.getUserId());
 		if (existingUser.isEmpty()) {
 			throw new UserNotFoundException("User not found");
 		}
-		Optional<DiagnosticCenter> existsCenter = diagnosticCenterRepository
-				.findByCenterId(diagnosticCenter.getCenterId());
+		Optional<DiagnosticCenter> existsCenter = diagnosticCenterRepository.findById(diagnosticCenter.getCenterId());
 		if (existsCenter.isEmpty()) {
 			throw new DiagnosticCenterNotFoundException("No diagnostic Center");
 		}
-
-		List<Test> availableTests = testRepository.findByDiagnosticCenter(diagnosticCenter);
-		{
-			if (availableTests == null)
-				throw new TestNotFoundException("No test found");
-		}
 		
-
+		
+		List<Test> availableTests = diagnosticCenter.getListOfTests();
+		
+				
+		if (availableTests.stream().filter(a -> a.getTestId() == testId).count() == 0L)
+			throw new TestNotFoundException("No test found");
+		//if(availableTests.isEmpty() || !availableTests.stream().anyMatch(a -> a.getTestId() == test))
+//		{
+//			throw new TestNotFoundException("No test found");
+//		}
 		LocalDateTime currentDateTime = LocalDateTime.now();
 
 		if (appointmentDate == null) {
-			throw  new InvalidAppointmentDateException("invalid appointment date");
+			throw new InvalidAppointmentDateException("invalid appointment date");
 		}
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 //		String formattedDateTime = appointmentDate.format(formatter);
-
+		Test test1 = availableTests.stream().filter(a -> a.getTestId() == testId).findFirst().get();
 		Appointment appointment = new Appointment();
 		appointment.setUser(existingUser.get());
 		appointment.setDiagnosticCenter(existsCenter.get());
-		appointment.setlistOfTests(availableTests);
+		appointment.setTest(test1);
 		appointment.setDateTime(appointmentDate);
 		appointment.setApproved(false);
-		
 
 		
-        for(Test tests : availableTests) {
-			
-			tests.setAppointment(appointment);
-			
-		}
-        appointmentRepository.save(appointment);
 
+		//appointmentRepository.save(appointment);
+		
+		existingUser.get().setAppointment(appointment);
+		existingUser.get().setDiagnosticCenter(diagnosticCenter);
+		userRepository.save(existingUser.get());
 	}
 
 	public List<Appointment> getPendingAppointments() {
@@ -96,16 +105,13 @@ public class AppointmentService {
 		if (appointment.getDiagnosticCenter().getCenterId() != centerID) {
 			throw new InvalidCenterIdException("appointment not found");
 		}
-		
+
 		appointment.setApproved(true);
 		appointmentRepository.save(appointment);
-		
-		User user =appointment.getUser();
+
+		User user = appointment.getUser();
 		userRepository.save(user);
-		
-	
-		
+
 	}
-	
 
 }

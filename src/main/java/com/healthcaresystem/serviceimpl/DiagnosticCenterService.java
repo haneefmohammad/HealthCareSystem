@@ -54,54 +54,93 @@ public class DiagnosticCenterService {
 //		return defaultTests;
 //	}
 
+//		System.out.println(diagnosticCenter.getCenterName());
+//		diagnosticCenter.setListOfTests(getDefaultTests(diagnosticCenter));
+//		diagnosticCenterRepository.save(diagnosticCenter);
+//		return "center added successfully";
+//	for(DiagnosticCenter center :diagnosticCenter)
+//	{
+//		System.out.println(center.getCenterName());
+//		List<Test> defaultTest =getDefaultTests(center);
+//		center.setListOfTests(defaultTest);
+//	}
+//	diagnosticCenterRepository.saveAll(diagnosticCenter);
+//	return "center added succesfully";
 	public String addDiagnosticCenter(DiagnosticCenter diagnosticCenter) {
-		System.out.println(diagnosticCenter.getCenterName());
-		diagnosticCenter.setListOfTests(getDefaultTests(diagnosticCenter));
+
+		//List<Test> defaultTest = getDefaultTests(diagnosticCenter);
+		List<Test> defaultTest = new ArrayList<>();
+
+		Test test = testRepository.findByTestNameIgnoreCase("Blood Group");
+
+		if (test == null) {
+			Test bloodGroupTest = new Test();
+			bloodGroupTest.setTestName("Blood Group");
+			defaultTest.add(bloodGroupTest);
+		} else {
+			defaultTest.add(test);
+		}
+
+		test = testRepository.findByTestNameIgnoreCase("Blood Sugar");
+
+		if (test == null) {
+			Test bloodGroupTest = new Test();
+			bloodGroupTest.setTestName("Blood Sugar");
+			defaultTest.add(bloodGroupTest);
+		} else {
+			defaultTest.add(test);
+		}
+
+		test = testRepository.findByTestNameIgnoreCase("Blood Pressure");
+
+		if (test == null) {
+			Test bloodGroupTest = new Test();
+			bloodGroupTest.setTestName("Blood Pressure");
+			defaultTest.add(bloodGroupTest);
+		} else {
+			defaultTest.add(test);
+		}
+
+		diagnosticCenter.setListOfTests(defaultTest);
 		diagnosticCenterRepository.save(diagnosticCenter);
-		return "center added successfully";
+		return "Center added successfully";
 	}
 
-	private List<Test> getDefaultTests(DiagnosticCenter diagnosticCenter) {
-
-		List<Test> defaultTests = new ArrayList<>();
-
-		Test bloodGroupTest = new Test();
-		bloodGroupTest.setTestName("Blood Group");
-		bloodGroupTest.setDiagnosticCenter(diagnosticCenter);
-
-		Test bloodSugarTest = new Test();
-		bloodSugarTest.setTestName("Blood Sugar");
-		bloodSugarTest.setDiagnosticCenter(diagnosticCenter);
-
-		Test bloodPressureTest = new Test();
-		bloodPressureTest.setTestName("Blood Pressure");
-		bloodPressureTest.setDiagnosticCenter(diagnosticCenter);
-
-		defaultTests.add(bloodPressureTest);
-		defaultTests.add(bloodSugarTest);
-		defaultTests.add(bloodGroupTest);
+//	private List<Test> getDefaultTests(DiagnosticCenter diagnosticCenter) {
 //
-        testRepository.save(bloodGroupTest);
-        testRepository.save(bloodPressureTest);
-		testRepository.save(bloodSugarTest);
+//		Test bloodSugarTest = new Test();
+//		bloodSugarTest.setTestName("Blood Sugar");
+//		// bloodSugarTest.setDiagnosticCenter(diagnosticCenter);
+//
+//		Test bloodPressureTest = new Test();
+//		bloodPressureTest.setTestName("Blood Pressure");
+//		// bloodPressureTest.setDiagnosticCenter(diagnosticCenter);
+//
+//		defaultTests.add(bloodPressureTest);
+//		defaultTests.add(bloodSugarTest);
+//		defaultTests.add(bloodGroupTest);
+////
+//		testRepository.save(bloodGroupTest);
+//		testRepository.save(bloodPressureTest);
+//		testRepository.save(bloodSugarTest);
+//
+//		// return List.of(bloodGroupTest, bloodSugarTest, bloodPressureTest);
+//		testRepository.saveAll(defaultTests);
+//		return defaultTests;
+//	}
 
-		return List.of(bloodGroupTest, bloodSugarTest, bloodPressureTest);
-
-	}
-
-	public List<DiagnosticCenter> getAllCenters()
-	{
+	public List<DiagnosticCenter> getAllCenters() {
 		return diagnosticCenterRepository.findAll();
 	}
-	
-	
-	public String removeCenter(int centerId)
-	{
-		DiagnosticCenter diagnosticCenter = diagnosticCenterRepository.findByCenterId(centerId).orElseThrow(() -> new DiagnosticCenterNotFoundException("Center not found with id"));
+
+	public String removeCenter(int centerId) {
+		DiagnosticCenter diagnosticCenter = diagnosticCenterRepository.findById(centerId)
+				.orElseThrow(() -> new DiagnosticCenterNotFoundException("Center not found with id"));
+		diagnosticCenter.setAppointmentList(new ArrayList<>());
+		diagnosticCenterRepository.save(diagnosticCenter);
 		diagnosticCenterRepository.delete(diagnosticCenter);
-		
+
 		return "center removed";
 	}
-	
-	
+
 }

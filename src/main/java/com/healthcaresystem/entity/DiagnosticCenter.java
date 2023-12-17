@@ -13,6 +13,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
@@ -25,23 +28,25 @@ public class DiagnosticCenter {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "center_id")
 	private int centerId;
-	
-	@Column(name="center_name")
+
+	@Column(name = "center_name")
 	private String centerName;
-	
+
 	@OneToMany(mappedBy = "diagnosticCenter")
-	//@JsonBackReference(value= "diagnostic_center")
-	private List<Appointment> appointmentList=new ArrayList<>();
+	// @JsonBackReference(value= "diagnostic_center")
+	private List<Appointment> appointmentList = new ArrayList<>();
+
+	// @OneToMany(mappedBy = "diagnosticCenter",cascade = CascadeType.ALL)
 	
-	@OneToMany(mappedBy = "diagnosticCenter",cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "center_test", joinColumns = @JoinColumn(name = "center_id"), inverseJoinColumns = @JoinColumn(name = "test_id"))
 	private List<Test> listOfTests = new ArrayList<>();
-	
+
 //	
 //	 @OneToMany(mappedBy = "diagnosticCenter") 
 //	 private List<User> userList;
 //	
-	 
-	
+
 	/*
 	 * @OneToMany(mappedBy = "center_list") private List<User> users;
 	 */
@@ -58,7 +63,7 @@ public class DiagnosticCenter {
 //
 //	public void setUserList(List<User> userList) {
 //		this.userList = userList;
-	//}
+	// }
 //
 //	public List<User> getUserList() {
 //		return userList;
@@ -70,6 +75,12 @@ public class DiagnosticCenter {
 
 	public int getCenterId() {
 		return centerId;
+	}
+
+	@Override
+	public String toString() {
+		return "DiagnosticCenter [centerId=" + centerId + ", centerName=" + centerName + ", appointmentList="
+				+ appointmentList + ", listOfTests=" + listOfTests.size() + "]";
 	}
 
 	public void setCenteId(int centreId) {
@@ -100,9 +111,6 @@ public class DiagnosticCenter {
 		this.listOfTests = listOfTests;
 	}
 
-	
-
-	
 	public DiagnosticCenter(int centerId, String centerName, List<Appointment> appointmentList,
 			List<Test> listOfTests) {
 		super();
@@ -110,11 +118,11 @@ public class DiagnosticCenter {
 		this.centerName = centerName;
 		this.appointmentList = appointmentList;
 		this.listOfTests = listOfTests;
-		//this.userList = userList;, List<User> userList
+		// this.userList = userList;, List<User> userList
 	}
 
 	public DiagnosticCenter() {
 		super();
 	}
-	
+
 }

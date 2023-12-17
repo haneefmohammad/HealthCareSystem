@@ -1,5 +1,6 @@
 package com.healthcaresystem.serviceimpl;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,11 +69,13 @@ public class UserService {
 	}
 
 	@Transactional
-	public String loginUser(String userEmail, String userPassword) {
-	    Optional<User> user = userRepository.findByUserEmailIgnoreCase(userEmail);
+	public String loginUser(Map<String, String> credentials) {
+		String userEmail = credentials.get("email");
+		String userPassword = credentials.get("password");
+		Optional<User> user = userRepository.findByUserEmailIgnoreCase(userEmail);
+	    
 	    if (user.isPresent()) {
-	    	System.out.println(user.get().getUserName());
-	    	System.out.println(user.get().getUserPassword().equals(userPassword));
+	    	
 	        if (user.get().getUserPassword().equals(userPassword)) {
 	        	
 	            return "Login Successful";
@@ -85,9 +88,21 @@ public class UserService {
 	}
 
 	@Transactional
-	public void deleteUserById(int userId)
+	public String deleteUserById(int userId)
 	{
-		userRepository.deleteById(userId);
+		Optional<User> user = userRepository.findById(userId);
+		if(user.isPresent())
+		{
+			userRepository.deleteById(userId);
+			return "User deleted successfully "+userId ;
+			
+		}
+		else
+		{
+			throw new UserNotFoundException("User not found");
+		}
+		
+		
 	}
 	
 	@Transactional

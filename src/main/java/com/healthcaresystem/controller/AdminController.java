@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.entity.DiagnosticCenter;
 import com.healthcaresystem.entity.Test;
+import com.healthcaresystem.exception.UserNotFoundException;
 import com.healthcaresystem.serviceimpl.AppointmentService;
 import com.healthcaresystem.serviceimpl.DiagnosticCenterService;
 
@@ -30,76 +31,60 @@ public class AdminController {
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	DiagnosticCenterService diagnosticCentreService;
-	
+
 	@Autowired
 	AppointmentService appointmentService;
-	
+
 	@Autowired
 	TestService testService;
-	
+
 	@DeleteMapping("/delete/{userId}")
 	public ResponseEntity<String> deleteUser(@PathVariable int userId) {
-	    try {
-	        userService.deleteUserById(userId);
-	        return ResponseEntity.ok("User deleted successfully");
-	    } catch (Exception e) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete user");
-	    }
+		return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUserById(userId));
+
 	}
+
 	@PostMapping("/addCenter")
-	public ResponseEntity<String> addCenter(@RequestBody DiagnosticCenter  diagnosticCenter)
-	{
+	public ResponseEntity<String> addCenter(@RequestBody DiagnosticCenter diagnosticCenter) {
 		String addedCenter = diagnosticCentreService.addDiagnosticCenter(diagnosticCenter);
-		return ResponseEntity.status(HttpStatus.CREATED).body("center created successfully");
+		return ResponseEntity.status(HttpStatus.CREATED).body(addedCenter);
 	}
-	
+
 	@GetMapping("/allCenters")
-	public ResponseEntity<List<DiagnosticCenter>> getAllCenters()
-	{
+	public ResponseEntity<List<DiagnosticCenter>> getAllCenters() {
 		List<DiagnosticCenter> allCenters = diagnosticCentreService.getAllCenters();
 		return ResponseEntity.ok(allCenters);
 	}
-	
+
 	@DeleteMapping("/removeCenter/{centerId}")
-	public ResponseEntity<String> removeCenter (@PathVariable("centerId") int centerId)
-	{
+	public ResponseEntity<String> removeCenter(@PathVariable("centerId") int centerId) {
 		return ResponseEntity.status(HttpStatus.OK).body(diagnosticCentreService.removeCenter(centerId));
-				}
-	
+	}
+
 	@PostMapping("/addTest/{centerId}")
-	public ResponseEntity<String> addTest(@PathVariable int centerId , @RequestBody Test test)
-	{
-		System.out.println(test);
+	public ResponseEntity<String> addTest(@PathVariable int centerId, @RequestBody Test test) {
 		String addedTest = testService.addTestToDiagnosticCenter(centerId, test);
-		return ResponseEntity.status(HttpStatus.CREATED).body("tests added succesfully");
+		return ResponseEntity.status(HttpStatus.CREATED).body(addedTest);
 	}
-	
+
 	@DeleteMapping("/{centerId}/removeTest/{testId}")
-	public ResponseEntity<String> removeTest(@PathVariable int centerId, @PathVariable int testId)
-	{
-		testService.removeTestFromDiagnosticCenter(centerId, testId);
-		return ResponseEntity.status(HttpStatus.OK).body("test removed");
+	public ResponseEntity<String> removeTest(@PathVariable int centerId, @PathVariable int testId) {
+		return new ResponseEntity<String>(testService.removeTestFromDiagnosticCenter(centerId, testId), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/pendingAppointments")
-	public ResponseEntity<List<Appointment>> getPendingAppointment()
-	{
+	public ResponseEntity<List<Appointment>> getPendingAppointment() {
 		List<Appointment> pendingAppointments = appointmentService.getPendingAppointments();
 		return ResponseEntity.ok(pendingAppointments);
 	}
-	
-	
+
 	@PostMapping("/approveAppointments/{appointmentId}/{centerId}")
-	public ResponseEntity<String> approveAppointments(@RequestParam int appointmentID,  int centerId)
-	{
-		appointmentService.approveAppointment(appointmentID, centerId);
+	public ResponseEntity<String> approveAppointments(@PathVariable int appointmentId, @PathVariable int centerId) {
+		appointmentService.approveAppointment(appointmentId, centerId);
 		return ResponseEntity.ok("Appointment Approved");
 	}
-	
-	
-	
-	
+
 }
