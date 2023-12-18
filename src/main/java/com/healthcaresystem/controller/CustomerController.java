@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.healthcaresystem.dto.MakeAppointmentDTO;
 import com.healthcaresystem.dto.UserDTO;
 import com.healthcaresystem.entity.DiagnosticCenter;
-import com.healthcaresystem.entity.Test;
+import com.healthcaresystem.entity.Tests;
 import com.healthcaresystem.entity.User;
 import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
 import com.healthcaresystem.exception.InvalidLoginException;

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.entity.DiagnosticCenter;
-import com.healthcaresystem.entity.Test;
+import com.healthcaresystem.entity.Tests;
 import com.healthcaresystem.exception.UserNotFoundException;
 import com.healthcaresystem.serviceimpl.AppointmentService;
 import com.healthcaresystem.serviceimpl.DiagnosticCenterService;
@@ -65,7 +65,7 @@ public class AdminController {
 	}
 
 	@PostMapping("/addTest/{centerId}")
-	public ResponseEntity<String> addTest(@PathVariable int centerId, @RequestBody Test test) {
+	public ResponseEntity<String> addTest(@PathVariable int centerId, @RequestBody Tests test) {
 		String addedTest = testService.addTestToDiagnosticCenter(centerId, test);
 		return ResponseEntity.status(HttpStatus.CREATED).body(addedTest);
 	}

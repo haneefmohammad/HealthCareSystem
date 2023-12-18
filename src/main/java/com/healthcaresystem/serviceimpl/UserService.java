@@ -50,12 +50,12 @@ public class UserService {
 		if (!nameValid(userDTO.getUserName())) {
 			throw new InvalidUserNameException(
 					"The name should not be blank and the name should should start with capital");
-
 		}
+		
 	}
 
 	private boolean passwordValid(String userPassword) {
-		String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,14}$";
+		String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
 		return userPassword.matches(passwordRegex);
 	}
 
@@ -65,7 +65,7 @@ public class UserService {
 	}
 
 	private boolean nameValid(String userName) {
-		return userName != null && !userName.isBlank() && userName.matches("^[^\\s].*");
+		return userName != null && !userName.isBlank() && userName.matches("^[A-Z][a-zA-Z]*$");
 	}
 
 	@Transactional
@@ -120,9 +120,5 @@ public class UserService {
 			return userRepository.save(existingUser);
 			
 		}
-	
-	
-	
-	
-	
+
 }

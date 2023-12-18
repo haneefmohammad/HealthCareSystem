@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.healthcaresystem.entity.DiagnosticCenter;
-import com.healthcaresystem.entity.Test;
+import com.healthcaresystem.entity.Tests;
 import com.healthcaresystem.entity.User;
 import com.healthcaresystem.dto.MakeAppointmentDTO;
 import com.healthcaresystem.entity.Appointment;
@@ -60,7 +60,7 @@ public class AppointmentService {
 		}
 		
 		
-		List<Test> availableTests = diagnosticCenter.getListOfTests();
+		List<Tests> availableTests = diagnosticCenter.getListOfTests();
 		
 				
 		if (availableTests.stream().filter(a -> a.getTestId() == testId).count() == 0L)
@@ -76,7 +76,7 @@ public class AppointmentService {
 		}
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 //		String formattedDateTime = appointmentDate.format(formatter);
-		Test test1 = availableTests.stream().filter(a -> a.getTestId() == testId).findFirst().get();
+		Tests test1 = availableTests.stream().filter(a -> a.getTestId() == testId).findFirst().get();
 		Appointment appointment = new Appointment();
 		appointment.setUser(existingUser.get());
 		appointment.setDiagnosticCenter(existsCenter.get());
@@ -103,7 +103,7 @@ public class AppointmentService {
 				.orElseThrow(() -> new AppointmentNotFoundException("appointment not found"));
 
 		if (appointment.getDiagnosticCenter().getCenterId() != centerID) {
-			throw new InvalidCenterIdException("appointment not found");
+			throw new InvalidCenterIdException("Invalid Center Id found");
 		}
 
 		appointment.setApproved(true);

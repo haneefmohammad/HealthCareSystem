@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.healthcaresystem.entity.DiagnosticCenter;
-import com.healthcaresystem.entity.Test;
+import com.healthcaresystem.entity.Tests;
 import com.healthcaresystem.entity.User;
 
 public class MakeAppointmentDTO {

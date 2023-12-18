@@ -45,7 +45,7 @@ public class Appointment {
 	private User user;
 	
 	@ManyToOne(cascade = CascadeType.PERSIST)
-	private Test test;
+	private Tests test;
 
 	
 	
@@ -101,15 +101,15 @@ public class Appointment {
 		this.user = user;
 	}
 
-	public Test getTest() {
+	public Tests getTest() {
 		return test;
 	}
 
-	public void setTest(Test test) {
+	public void setTest(Tests test) {
 		this.test = test;
 	}
 	public Appointment(int appointmentId, LocalDateTime dateTime, boolean approved, DiagnosticCenter diagnosticCenter,
-			User user, Test test) {
+			User user, Tests test) {
 		super();
 		this.appointmentId = appointmentId;
 		this.dateTime = dateTime;

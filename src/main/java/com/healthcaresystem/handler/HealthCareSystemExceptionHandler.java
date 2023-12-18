@@ -83,7 +83,7 @@ public class HealthCareSystemExceptionHandler {
 	@ExceptionHandler(InvalidPasswordException.class)
 	public ResponseEntity<ApiError> invalidPasswordException( InvalidPasswordException ex)
 	{
-		error.setStatus(HttpStatus.BAD_REQUEST);
+		error.setStatus(HttpStatus.NOT_ACCEPTABLE);
     	error.setMessage(ex.getMessage());
     	error.setTimestamp(LocalDateTime.now());
     	return new ResponseEntity<>(error, HttpStatus.valueOf(400));
@@ -144,20 +144,6 @@ public class HealthCareSystemExceptionHandler {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-
-
-
 
 
 }

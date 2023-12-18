@@ -40,38 +40,8 @@ public class DiagnosticCenter {
 	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "center_test", joinColumns = @JoinColumn(name = "center_id"), inverseJoinColumns = @JoinColumn(name = "test_id"))
-	private List<Test> listOfTests = new ArrayList<>();
+	private List<Tests> listOfTests = new ArrayList<>();
 
-//	
-//	 @OneToMany(mappedBy = "diagnosticCenter") 
-//	 private List<User> userList;
-//	
-
-	/*
-	 * @OneToMany(mappedBy = "center_list") private List<User> users;
-	 */
-
-	/*
-	 * public List<User> getUsers() { return users; }
-	 * 
-	 * public void setUsers(List<User> users) { this.users = users; }
-	 */
-
-//	public List<User> getUserList() {
-//		return userList;
-//	}
-//
-//	public void setUserList(List<User> userList) {
-//		this.userList = userList;
-	// }
-//
-//	public List<User> getUserList() {
-//		return userList;
-//	}
-//
-//	public void setUserList(List<User> userList) {
-//		this.userList = userList;
-//	}
 
 	public int getCenterId() {
 		return centerId;
@@ -83,7 +53,7 @@ public class DiagnosticCenter {
 				+ appointmentList + ", listOfTests=" + listOfTests.size() + "]";
 	}
 
-	public void setCenteId(int centreId) {
+	public void setCenterId(int centreId) {
 		this.centerId = centreId;
 	}
 
@@ -103,16 +73,16 @@ public class DiagnosticCenter {
 		this.appointmentList = appointmentList;
 	}
 
-	public List<Test> getListOfTests() {
+	public List<Tests> getListOfTests() {
 		return listOfTests;
 	}
 
-	public void setListOfTests(List<Test> listOfTests) {
+	public void setListOfTests(List<Tests> listOfTests) {
 		this.listOfTests = listOfTests;
 	}
 
 	public DiagnosticCenter(int centerId, String centerName, List<Appointment> appointmentList,
-			List<Test> listOfTests) {
+			List<Tests> listOfTests) {
 		super();
 		this.centerId = centerId;
 		this.centerName = centerName;

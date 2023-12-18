@@ -21,7 +21,7 @@ import jakarta.persistence.SequenceGenerator;
 
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "testId")
-public class Test {
+public class Tests {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +31,7 @@ public class Test {
 	@Column(name="test_name")
 	private String testName;
 	
-//	@ManyToOne
-//	@JoinColumn(name = "center_id")
+
 	@ManyToMany(mappedBy = "listOfTests",cascade = CascadeType.ALL)
     private  List<DiagnosticCenter> diagnosticCenter = new ArrayList<>();
 	
@@ -75,14 +74,14 @@ public class Test {
 		this.appointment = appointment;
 	}
 
-	public Test(int testId, String testName, List<DiagnosticCenter> diagnosticCenter) {
+	public Tests(int testId, String testName, List<DiagnosticCenter> diagnosticCenter) {
 		super();
 		this.testId = testId;
 		this.testName = testName;
 		this.diagnosticCenter = diagnosticCenter;
 	}
 	
-	public Test( String testName, List<DiagnosticCenter> diagnosticCenter) {
+	public Tests( String testName, List<DiagnosticCenter> diagnosticCenter) {
 		super();
 		
 		this.testName = testName;
@@ -90,7 +89,7 @@ public class Test {
 	}
 	
 
-	public Test(int testId, String testName, List<DiagnosticCenter> diagnosticCenter, List<Appointment> appointment) {
+	public Tests(int testId, String testName, List<DiagnosticCenter> diagnosticCenter, List<Appointment> appointment) {
 		super();
 		this.testId = testId;
 		this.testName = testName;
@@ -98,14 +97,14 @@ public class Test {
 		this.appointment = appointment;
 	}
 
-	public Test( String testName) {
+	public Tests( String testName) {
 		super();
 		
 		this.testName = testName;
 	}
 	
 
-	public Test() {
+	public Tests() {
 		super();
 	}
 
