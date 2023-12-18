@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.healthcaresystem.exception.AppointmentNotFoundException;
 import com.healthcaresystem.exception.DiagnosticCenterException;
 import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
+import com.healthcaresystem.exception.DuplicateAppointmentException;
 import com.healthcaresystem.exception.InvalidAppointmentDateException;
 import com.healthcaresystem.exception.InvalidCenterIdException;
 import com.healthcaresystem.exception.InvalidLoginException;
@@ -143,7 +144,14 @@ public class HealthCareSystemExceptionHandler {
     	return new ResponseEntity<>(error, HttpStatus.valueOf(400));
 	}
 	
-	
+	@ExceptionHandler(DuplicateAppointmentException.class)
+	public ResponseEntity<ApiError> duplicateAppointmentException( DuplicateAppointmentException ex)
+	{
+		error.setStatus(HttpStatus.BAD_REQUEST);
+    	error.setMessage(ex.getMessage());
+    	error.setTimestamp(LocalDateTime.now());
+    	return new ResponseEntity<>(error, HttpStatus.valueOf(400));
+	}
 
 
 }

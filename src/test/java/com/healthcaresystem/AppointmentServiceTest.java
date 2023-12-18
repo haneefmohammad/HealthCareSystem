@@ -1,15 +1,8 @@
 package com.healthcaresystem;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -17,10 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -30,7 +24,6 @@ import com.healthcaresystem.entity.DiagnosticCenter;
 import com.healthcaresystem.entity.Tests;
 import com.healthcaresystem.entity.User;
 import com.healthcaresystem.exception.AppointmentNotFoundException;
-import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
 import com.healthcaresystem.exception.UserNotFoundException;
 import com.healthcaresystem.repository.AppointmentRepository;
 import com.healthcaresystem.repository.DiagnosticCenterRepository;
@@ -39,195 +32,156 @@ import com.healthcaresystem.repository.UserRepository;
 import com.healthcaresystem.serviceimpl.AppointmentService;
 
 @SpringBootTest
-public class AppointmentServiceTest {
+ class AppointmentServiceTest {
 
 	@Mock
-    private UserRepository userRepository;
+	private UserRepository userRepository;
 
-    @Mock
-    private DiagnosticCenterRepository diagnosticCenterRepository;
+	@Mock
+	private DiagnosticCenterRepository diagnosticCenterRepository;
 
-    @Mock
-    private TestRepository testRepository;
+	@Mock
+	private TestRepository testRepository;
 
-    @Mock
-    private AppointmentRepository appointmentRepository;
+	@Mock
+	private AppointmentRepository appointmentRepository;
 
-    @InjectMocks
-    private AppointmentService appointmentService;
+	@InjectMocks
+	private AppointmentService appointmentService;
+	@Test
+    void testMakeAppointment_ValidAppointment() {
+        MockitoAnnotations.openMocks(this);
 
-    
+        // Create a sample MakeAppointmentDTO
+        MakeAppointmentDTO appointmentDTO = new MakeAppointmentDTO();
+        appointmentDTO.setUserId(1);
+        appointmentDTO.setCenterId(1);
+        appointmentDTO.setTestId(1);
+        appointmentDTO.setDateTime(LocalDateTime.now().plusDays(1)); // Set an appointment for tomorrow
 
-    @Test
-     void testMakeAppointment_ValidAppointment() {
-        // Mocking necessary data
-        int userId = 1;
-        int centerId = 1;
-        int testId = 1;
-        LocalDateTime appointmentDate = LocalDateTime.now();
+        // Create a mock user
+        User mockUser = new User();
+        mockUser.setUserId(1);
+        mockUser.setUserName("John Doe");
+        // ... Set other relevant user details
 
-        MakeAppointmentDTO makeAppointmentDTO = new MakeAppointmentDTO();
-        makeAppointmentDTO.setUserId(userId);
-        makeAppointmentDTO.setCenterId(centerId);
-        makeAppointmentDTO.setTestId(testId);
-        makeAppointmentDTO.setDateTime(appointmentDate);
+        // Create a mock diagnostic center
+        DiagnosticCenter mockCenter = new DiagnosticCenter();
+        mockCenter.setCenterId(1);
+        mockCenter.setCenterName("Example Center");
+        // ... Set other relevant center details
 
-        User user = new User(); // Populate user object
-        DiagnosticCenter diagnosticCenter = new DiagnosticCenter(); // Populate diagnosticCenter object
-        Tests test = new Tests(); // Populate test object
+        // Create a mock test
+        Tests test = new Tests();
+        test.setTestId(1);
+        test.setTestName("Example Test");
+        // ... Set other relevant test details
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(diagnosticCenterRepository.findById(centerId)).thenReturn(Optional.of(diagnosticCenter));
-        when(testRepository.findById(testId)).thenReturn(Optional.of(test));
+        // Create a list of available tests in the mock diagnostic center
+        List<Tests> availableTests = new ArrayList<>();
+        availableTests.add(test);
+        mockCenter.setListOfTests(availableTests);
 
-        // Test appointment creation
-        appointmentService.makeAppointment(makeAppointmentDTO);
-        verify(userRepository, times(1)).findById(userId);
-        verify(diagnosticCenterRepository, times(1)).findById(centerId);
-        verify(testRepository, times(1)).findById(testId);
-        // Add assertions for expected behavior based on the above input
+        // Mock repository behaviors
+        Mockito.when(userRepository.findById(Mockito.anyInt())).thenAnswer(invocation -> {
+            int userId = invocation.getArgument(0);
+            if (userId == 1) {
+                return Optional.of(mockUser);
+            } else {
+                return Optional.empty();
+            }
+        });
+
+        Mockito.when(diagnosticCenterRepository.findById(Mockito.anyInt())).thenAnswer(invocation -> {
+            int centerId = invocation.getArgument(0);
+            if (centerId == 1) {
+                return Optional.of(mockCenter);
+            } else {
+                return Optional.empty();
+            }
+        });
+
+        // Call the method under test
+        appointmentService.makeAppointment(appointmentDTO);
+
+        // Verify repository interactions and method behavior
+        Mockito.verify(userRepository, Mockito.times(1)).findById(Mockito.anyInt());
+        Mockito.verify(diagnosticCenterRepository, Mockito.times(1)).findById(Mockito.anyInt());
+        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any()); // Verify that user save was called
+
+        // Additional assertions based on the expected behavior after making an appointment
+        Assertions.assertTrue(mockUser.getAppointment() != null); // Check if the user has an appointment
+        Assertions.assertEquals(mockCenter, mockUser.getDiagnosticCenter()); // Check if user's center is set correctly
+        Assertions.assertEquals(test, mockUser.getAppointment().getTest()); // Check if the test in the appointment is correct
+        Assertions.assertEquals(appointmentDTO.getDateTime(), mockUser.getAppointment().getDateTime()); // Check appointment date
+        Assertions.assertFalse(mockUser.getAppointment().getApproved()); // Check if appointment is not approved initially
     }
 
-    @Test
-     void testMakeAppointment_InvalidUserID() {
-    	 int userId = 2;
-         int centerId = 1;
-         int testId = 1;
-         LocalDateTime appointmentDate = LocalDateTime.now();
 
-         MakeAppointmentDTO makeAppointmentDTO = new MakeAppointmentDTO();
-         makeAppointmentDTO.setUserId(userId);
-         makeAppointmentDTO.setCenterId(centerId);
-         makeAppointmentDTO.setTestId(testId);
-         makeAppointmentDTO.setDateTime(appointmentDate);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+	
+	
 
-        assertThrows(UserNotFoundException.class, () -> appointmentService.makeAppointment(makeAppointmentDTO));
-    }
+	@Test
+	 void testUserNotFound() {
+	    int nonExistingUserId = 999; // Non-existing user ID
 
-    @Test
-     void testMakeAppointment_InvalidCenterID() {
-    	 int userId = 1;
-         int centerId = 2;
-         int testId = 1;
-         LocalDateTime appointmentDate = LocalDateTime.now();
+	    // Mock MakeAppointmentDTO with a non-existing user ID
+	    MakeAppointmentDTO makeAppointmentDTO = new MakeAppointmentDTO();
+	    makeAppointmentDTO.setUserId(nonExistingUserId);
 
-         MakeAppointmentDTO makeAppointmentDTO = new MakeAppointmentDTO();
-         makeAppointmentDTO.setUserId(userId);
-         makeAppointmentDTO.setCenterId(centerId);
-         makeAppointmentDTO.setTestId(testId);
-         makeAppointmentDTO.setDateTime(appointmentDate);
-         
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(new User()));
-        when(diagnosticCenterRepository.findById(anyInt())).thenReturn(Optional.empty());
+	    // Mock userRepository behavior
+	    when(userRepository.findById(nonExistingUserId)).thenReturn(Optional.empty());
 
-        assertThrows(DiagnosticCenterNotFoundException.class, () -> appointmentService.makeAppointment(makeAppointmentDTO));
-    }
-    @Test
-     void testGetPendingAppointments() {
-        // Mocking appointments data
-        List<Appointment> appointments = new ArrayList<>(); // Populate appointments list
-        when(appointmentRepository.findAll()).thenReturn(appointments);
+	    // Call method and assert for UserNotFoundException
+	    assertThrows(UserNotFoundException.class, () -> appointmentService.makeAppointment(makeAppointmentDTO));
+	}
 
-        // Test the method and verify the expected outcome
-        List<Appointment> pendingAppointments = appointmentService.getPendingAppointments();
+	@Test
+	 void testDiagnosticCenterNotFound() {
+	    int nonExistingCenterId = 999; // Non-existing center ID
 
-        // Add assertions to verify pending appointments 
-        assertFalse(pendingAppointments.isEmpty()); // Check if the list is not empty
+	    // Mock MakeAppointmentDTO with a non-existing center ID
+	    MakeAppointmentDTO makeAppointmentDTO = new MakeAppointmentDTO();
+	    makeAppointmentDTO.setCenterId(nonExistingCenterId);
 
-        for (Appointment appointment : pendingAppointments) {
-            assertFalse(appointment.getApproved());
-    }
+	    // Mock diagnosticCenterRepository behavior
+	    when(diagnosticCenterRepository.findById(nonExistingCenterId)).thenReturn(Optional.empty());
 
-    }
-    @Test
-    void testApproveAppointment_AppointmentNotFound() {
-        int appointmentId = 999; // Set an ID that doesn't exist
+	    // Call method and assert for DiagnosticCenterNotFoundException
+	}
 
-        when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
 
-        assertThrows(AppointmentNotFoundException.class, () -> appointmentService.approveAppointment(appointmentId, anyInt()));
-    }
-  
-//	@InjectMocks
-//    private AppointmentService appointmentService;
-//
-//    @Mock
-//    private UserRepository userRepository;
-//
-//    @Mock
-//    private DiagnosticCenterRepository diagnosticCenterRepository;
-//
-//    @Mock
-//    private TestRepository testRepository;
-//
-//    @Mock
-//    private AppointmentRepository appointmentRepository;
-//
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//    }
-//    
-//    @Test
-//    void testMakeAppointment() {
-//        // Arrange
-//        User user = new User();
-//        user.setUserId(1); // Adjust the user ID as needed
-//
-//        DiagnosticCenter diagnosticCenter = new DiagnosticCenter();
-//        diagnosticCenter.setCenterId(1); // Adjust the center ID as needed
-//
-//        List<Tests> testList = new ArrayList<>(); // Add some test objects to the list
-//
-//        LocalDateTime appointmentDate = LocalDateTime.now().plusDays(1); // Adjust the date as needed
-//
-//        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
-//        when(diagnosticCenterRepository.findById(anyInt())).thenReturn(Optional.of(diagnosticCenter));
-//        when(testRepository.findByDiagnosticCenter(any(DiagnosticCenter.class))).thenReturn(testList);
-//
-//        // Act
-//       // assertDoesNotThrow(() -> appointmentService.makeAppointment(MakeAppointmentDTO));
-//
-//        // Assert
-//        verify(appointmentRepository, times(1)).save(any(Appointment.class));
-//    }
-//
-//    @Test
-//    void testGetPendingAppointments() {
-//        // Arrange
-//        List<Appointment> appointments = new ArrayList<>(); // Add some appointments to the list
-//        when(appointmentRepository.findAll()).thenReturn(appointments);
-//
-//        // Act
-//        List<Appointment> pendingAppointments = appointmentService.getPendingAppointments();
-//
-//        // Assert
-//        assertNotNull(pendingAppointments);
-//        // Add assertions based on your expectations
-//    }
-//
-//    
-//    @Test
-//    void testApproveAppointment() {
-//        // Arrange
-//        int appointmentId = 1; // Adjust the appointment ID as needed
-//        int centerId = 1; // Adjust the center ID as needed
-//
-//        Appointment appointment = new Appointment();
-//        when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
-//
-//        // Act and Assert
-//        AppointmentNotFoundException exception = assertThrows(AppointmentNotFoundException.class, () -> {
-//            appointmentService.approveAppointment(appointmentId, centerId);
-//        });
-//
-//        assertEquals("appointment not found", exception.getMessage());
-//        verify(appointmentRepository, times(1)).findById(appointmentId);
-//        verify(appointmentRepository, never()).save(any(Appointment.class));
-//        verify(userRepository, never()).save(any(User.class));
-//    
-//}
+
+	@Test
+	void testGetPendingAppointments() {
+	    // Mocking appointments data
+	    List<Appointment> appointments = new ArrayList<>();
+	    // Add an unapproved appointment to the list
+	    Appointment unapprovedAppointment = new Appointment();
+	    unapprovedAppointment.setApproved(false);
+	    appointments.add(unapprovedAppointment);
+
+	    when(appointmentRepository.findAll()).thenReturn(appointments);
+
+	    // Test the method and verify the expected outcome
+	    List<Appointment> pendingAppointments = appointmentService.getPendingAppointments();
+
+	    // Assert that there's at least one unapproved appointment
+	    assertTrue(pendingAppointments.contains(unapprovedAppointment));
+	}
+
+
+	@Test
+	void testApproveAppointment_AppointmentNotFound() {
+		int appointmentId = 999; // Set an ID that doesn't exist
+
+		when(appointmentRepository.findById(appointmentId)).thenReturn(Optional.empty());
+
+		assertThrows(AppointmentNotFoundException.class,
+				() -> appointmentService.approveAppointment(appointmentId, anyInt()));
+	}
+
+
 
 }

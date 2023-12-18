@@ -15,6 +15,7 @@ import com.healthcaresystem.dto.MakeAppointmentDTO;
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.exception.AppointmentNotFoundException;
 import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
+import com.healthcaresystem.exception.DuplicateAppointmentException;
 import com.healthcaresystem.exception.InvalidAppointmentDateException;
 import com.healthcaresystem.exception.InvalidCenterIdException;
 import com.healthcaresystem.exception.TestNotFoundException;
@@ -49,7 +50,7 @@ public class AppointmentService {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User Id not found"));
 		DiagnosticCenter diagnosticCenter = diagnosticCenterRepository.findById(centerId)
 				.orElseThrow(() -> new DiagnosticCenterNotFoundException("Center id not found"));
-
+		
 		Optional<User> existingUser = userRepository.findById(user.getUserId());
 		if (existingUser.isEmpty()) {
 			throw new UserNotFoundException("User not found");
@@ -59,10 +60,8 @@ public class AppointmentService {
 			throw new DiagnosticCenterNotFoundException("No diagnostic Center");
 		}
 		
-		
 		List<Tests> availableTests = diagnosticCenter.getListOfTests();
-		
-				
+			
 		if (availableTests.stream().filter(a -> a.getTestId() == testId).count() == 0L)
 			throw new TestNotFoundException("No test found");
 		//if(availableTests.isEmpty() || !availableTests.stream().anyMatch(a -> a.getTestId() == test))
@@ -71,12 +70,21 @@ public class AppointmentService {
 //		}
 		LocalDateTime currentDateTime = LocalDateTime.now();
 
-		if (appointmentDate == null) {
+		if (appointmentDate == null || appointmentDate.isBefore(currentDateTime)) {
 			throw new InvalidAppointmentDateException("invalid appointment date");
 		}
+		
+		
+		
 //		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 //		String formattedDateTime = appointmentDate.format(formatter);
 		Tests test1 = availableTests.stream().filter(a -> a.getTestId() == testId).findFirst().get();
+		if (appointmentRepository.existsByUserAndTestAndDiagnosticCenterAndDateTime(
+                existingUser.get(), test1, diagnosticCenter, makeAppointmentDTO.getDateTime()) ){
+            throw new DuplicateAppointmentException("Duplicate appointment found for user, test, center, and date.");
+        }
+		
+		
 		Appointment appointment = new Appointment();
 		appointment.setUser(existingUser.get());
 		appointment.setDiagnosticCenter(existsCenter.get());

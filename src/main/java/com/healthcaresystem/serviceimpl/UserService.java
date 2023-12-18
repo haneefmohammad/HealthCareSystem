@@ -45,7 +45,7 @@ public class UserService {
 			throw new InvalidPasswordException("Invalid Password Format");
 		}
 		if (!phoneNumberValid(userDTO.getPhoneNumber())) {
-			throw new InvalidPhoneNumberException("The digits should be 10");
+			throw new InvalidPhoneNumberException("The digits should be 10 and should be valid");
 		}
 		if (!nameValid(userDTO.getUserName())) {
 			throw new InvalidUserNameException(
@@ -61,7 +61,7 @@ public class UserService {
 
 	private boolean phoneNumberValid(long phoneNumber) {
 		String phoneNumberStr = String.valueOf(phoneNumber);
-		return phoneNumberStr.matches("\\d{10}");
+		return phoneNumberStr.matches("[6-9][0-9]{9}");
 	}
 
 	private boolean nameValid(String userName) {
