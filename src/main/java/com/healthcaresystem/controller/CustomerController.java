@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.healthcaresystem.dto.MakeAppointmentDTO;
+import com.healthcaresystem.dto.TestCenterInfoDTO;
 import com.healthcaresystem.dto.UserDTO;
 import com.healthcaresystem.entity.DiagnosticCenter;
 import com.healthcaresystem.entity.Tests;
@@ -29,6 +31,7 @@ import com.healthcaresystem.exception.UserNotFoundException;
 import com.healthcaresystem.repository.DiagnosticCenterRepository;
 import com.healthcaresystem.repository.UserRepository;
 import com.healthcaresystem.serviceimpl.AppointmentService;
+import com.healthcaresystem.serviceimpl.DiagnosticCenterService;
 import com.healthcaresystem.serviceimpl.UserService;
 
 @RestController
@@ -38,6 +41,9 @@ public class CustomerController {
 	private UserService userService;
 	@Autowired
 	private AppointmentService appointmentService;
+	@Autowired
+	private DiagnosticCenterService diagnosticCenterService;
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -66,6 +72,13 @@ public class CustomerController {
 	appointmentService.makeAppointment(makeAppointmentDTO);
 		return ResponseEntity.ok("Appointment  Added Successfully");
 
+	}
+	
+	@GetMapping("/login/viewCenterTest")
+	public ResponseEntity<List<TestCenterInfoDTO>> viewCenterTests()
+	{
+		List<TestCenterInfoDTO> viewAllDetails = diagnosticCenterService.getTestCenterInfo();
+		return ResponseEntity.ok(viewAllDetails);
 	}
 
 }

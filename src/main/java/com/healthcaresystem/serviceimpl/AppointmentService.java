@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.healthcaresystem.entity.DiagnosticCenter;
 import com.healthcaresystem.entity.Tests;
 import com.healthcaresystem.entity.User;
+import com.healthcaresystem.dto.AppointmentDetailsDTO;
 import com.healthcaresystem.dto.MakeAppointmentDTO;
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.exception.AppointmentNotFoundException;
@@ -101,9 +104,24 @@ public class AppointmentService {
 		userRepository.save(existingUser.get());
 	}
 
-	public List<Appointment> getPendingAppointments() {
+	public List<AppointmentDetailsDTO> getPendingAppointments() {
 		List<Appointment> appointments = appointmentRepository.findAll();
-		return appointments.stream().filter(a -> !a.getApproved()).toList();
+		return appointments.stream().filter(a -> !a.getApproved()).map(this:: mapTOAppointmentDetails).collect(Collectors.toList());
+		
+	}
+	private AppointmentDetailsDTO mapTOAppointmentDetails(Appointment appointment)
+	{
+		AppointmentDetailsDTO detailsDTO = new AppointmentDetailsDTO();
+		detailsDTO.setAppointmentId(appointment.getAppointmentId());
+		detailsDTO.setCenterId(appointment.getDiagnosticCenter().getCenterId());
+		detailsDTO.setCenterName(appointment.getDiagnosticCenter().getCenterName());
+		detailsDTO.setAppointmentId(appointment.getAppointmentId());
+		detailsDTO.setTestId(appointment.getTest().getTestId());
+		detailsDTO.setTestName(appointment.getTest().getTestName());
+		detailsDTO.setUserID(appointment.getUser().getUserId());
+		detailsDTO.setApproved(appointment.getApproved());
+		
+		return detailsDTO;
 	}
 
 	public void approveAppointment(int appointmentId, int centerID) {

@@ -1,7 +1,7 @@
 package com.healthcaresystem;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -20,13 +20,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.healthcaresystem.dto.TestCenterInfoDTO;
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.entity.DiagnosticCenter;
+import com.healthcaresystem.entity.Tests;
+import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
 import com.healthcaresystem.repository.DiagnosticCenterRepository;
 import com.healthcaresystem.repository.TestRepository;
 import com.healthcaresystem.serviceimpl.DiagnosticCenterService;
-import com.healthcaresystem.entity.Tests;
-import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
+import com.healthcaresystem.serviceimpl.TestService;
 
 @SpringBootTest
 public class DiagnosticCenterTest {
@@ -40,6 +42,8 @@ public class DiagnosticCenterTest {
 	@InjectMocks
 	private DiagnosticCenterService diagnosticCenterService;
 
+	@InjectMocks
+	private TestService testService;
 	@Test
 	void testAddDiagnosticCenter() {
 		// Create default tests
@@ -246,6 +250,10 @@ public class DiagnosticCenterTest {
 	    // Check if the removed center doesn't have any tests
 	    assertEquals(0, diagnosticCenter.getListOfTests().size()); // Ensure all tests are removed when the center is removed
 	}
-
+	 
+	
 
 }
+
+
+

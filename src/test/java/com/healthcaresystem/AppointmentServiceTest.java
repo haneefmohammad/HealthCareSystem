@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.healthcaresystem.dto.AppointmentDetailsDTO;
 import com.healthcaresystem.dto.MakeAppointmentDTO;
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.entity.DiagnosticCenter;
@@ -165,7 +166,7 @@ import com.healthcaresystem.serviceimpl.AppointmentService;
 	    when(appointmentRepository.findAll()).thenReturn(appointments);
 
 	    // Test the method and verify the expected outcome
-	    List<Appointment> pendingAppointments = appointmentService.getPendingAppointments();
+	    List<AppointmentDetailsDTO> pendingAppointments = appointmentService.getPendingAppointments();
 
 	    // Assert that there's at least one unapproved appointment
 	    assertTrue(pendingAppointments.contains(unapprovedAppointment));

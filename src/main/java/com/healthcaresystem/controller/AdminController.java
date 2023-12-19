@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.healthcaresystem.dto.AppointmentDetailsDTO;
 import com.healthcaresystem.entity.Appointment;
 import com.healthcaresystem.entity.DiagnosticCenter;
 import com.healthcaresystem.entity.Tests;
@@ -76,8 +77,8 @@ public class AdminController {
 	}
 
 	@GetMapping("/pendingAppointments")
-	public ResponseEntity<List<Appointment>> getPendingAppointment() {
-		List<Appointment> pendingAppointments = appointmentService.getPendingAppointments();
+	public ResponseEntity<List<AppointmentDetailsDTO>> getPendingAppointment() {
+		List<AppointmentDetailsDTO> pendingAppointments = appointmentService.getPendingAppointments();
 		return ResponseEntity.ok(pendingAppointments);
 	}
 

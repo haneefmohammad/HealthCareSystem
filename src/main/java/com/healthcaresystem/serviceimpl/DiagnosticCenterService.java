@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.healthcaresystem.dto.TestCenterInfoDTO;
 import com.healthcaresystem.entity.DiagnosticCenter;
 import com.healthcaresystem.entity.Tests;
 import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
@@ -92,6 +93,33 @@ public class DiagnosticCenterService {
 	    diagnosticCenterRepository.delete(diagnosticCenter);
 
 	    return "center removed";
+	}
+	
+	
+	public List<TestCenterInfoDTO> getTestCenterInfo()
+	{
+		List<TestCenterInfoDTO> testCenterInfoList =  new ArrayList<>();
+		
+		List<DiagnosticCenter> diagnosticCenters = diagnosticCenterRepository.findAll();
+		for(DiagnosticCenter diagnosticCenter: diagnosticCenters)
+		{
+			int centerId = diagnosticCenter.getCenterId();
+			String centerName = diagnosticCenter.getCenterName();
+			String centerAddress = diagnosticCenter.getCenterAddress();
+			
+			List<Tests> tests = diagnosticCenter.getListOfTests();
+			for(Tests test: tests) {
+				int testID = test.getTestId();
+				String testName = test.getTestName();
+				
+				TestCenterInfoDTO testCenterInfoDTO = new TestCenterInfoDTO(centerId, testID, centerName, testName ,centerAddress);
+				testCenterInfoList.add(testCenterInfoDTO);
+			}
+		}
+		return testCenterInfoList;
+	
+
+		
 	}
 	
 }

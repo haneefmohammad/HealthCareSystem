@@ -31,6 +31,15 @@ public class DiagnosticCenter {
 
 	@Column(name = "center_name")
 	private String centerName;
+	@Column(name="center_address")
+	private String centerAddress;
+	public String getCenterAddress() {
+		return centerAddress;
+	}
+
+	public void setCenterAddress(String centerAddress) {
+		this.centerAddress = centerAddress;
+	}
 
 	@OneToMany(mappedBy = "diagnosticCenter")
 	// @JsonBackReference(value= "diagnostic_center")
@@ -82,8 +91,9 @@ public class DiagnosticCenter {
 	}
 
 	public DiagnosticCenter(int centerId, String centerName, List<Appointment> appointmentList,
-			List<Tests> listOfTests) {
+			List<Tests> listOfTests,String centerAddress) {
 		super();
+		this.centerAddress=centerAddress;
 		this.centerId = centerId;
 		this.centerName = centerName;
 		this.appointmentList = appointmentList;
