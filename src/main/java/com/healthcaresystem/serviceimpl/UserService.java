@@ -55,7 +55,7 @@ public class UserService {
 	}
 
 	private boolean passwordValid(String userPassword) {
-		String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
+		String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,14}$";
 		return userPassword.matches(passwordRegex);
 	}
 

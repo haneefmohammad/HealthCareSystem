@@ -1,6 +1,5 @@
 package com.healthcaresystem.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -18,18 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.healthcaresystem.dto.MakeAppointmentDTO;
 import com.healthcaresystem.dto.TestCenterInfoDTO;
 import com.healthcaresystem.dto.UserDTO;
-import com.healthcaresystem.entity.DiagnosticCenter;
-import com.healthcaresystem.entity.Tests;
+
 import com.healthcaresystem.entity.User;
-import com.healthcaresystem.exception.DiagnosticCenterNotFoundException;
-import com.healthcaresystem.exception.InvalidLoginException;
-import com.healthcaresystem.exception.InvalidPasswordException;
-import com.healthcaresystem.exception.InvalidPhoneNumberException;
-import com.healthcaresystem.exception.InvalidUserNameException;
-import com.healthcaresystem.exception.UserException;
-import com.healthcaresystem.exception.UserNotFoundException;
-import com.healthcaresystem.repository.DiagnosticCenterRepository;
-import com.healthcaresystem.repository.UserRepository;
 import com.healthcaresystem.serviceimpl.AppointmentService;
 import com.healthcaresystem.serviceimpl.DiagnosticCenterService;
 import com.healthcaresystem.serviceimpl.UserService;
@@ -44,11 +33,6 @@ public class CustomerController {
 	@Autowired
 	private DiagnosticCenterService diagnosticCenterService;
 	
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private DiagnosticCenterRepository diagnosticCenterRepository;
 
 	@PostMapping("/register")
 	public ResponseEntity<String> register(@RequestBody UserDTO user) {

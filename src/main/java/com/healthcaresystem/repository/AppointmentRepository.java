@@ -17,5 +17,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 	boolean existsByUserAndTestAndDiagnosticCenterAndDateTime(User user, Tests test, DiagnosticCenter diagnosticCenter,
 			LocalDateTime appointmentDate);
 	
-	
+	//boolean existsByUserandDateTime(User user, LocalDateTime dateTime);
 }

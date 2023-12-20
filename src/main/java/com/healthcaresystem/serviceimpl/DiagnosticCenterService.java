@@ -71,22 +71,14 @@ public class DiagnosticCenterService {
 		return diagnosticCenterRepository.findAll();
 	}
 
-//	public String removeCenter(int centerId) {
-//		DiagnosticCenter diagnosticCenter = diagnosticCenterRepository.findById(centerId)
-//				.orElseThrow(() -> new DiagnosticCenterNotFoundException("Center not found with id"));
-//		diagnosticCenter.setAppointmentList(new ArrayList<>());
-//		diagnosticCenterRepository.save(diagnosticCenter);
-//		diagnosticCenterRepository.delete(diagnosticCenter);
-//
-//		return "center removed";
-//	}
+
 
 	public String removeCenter(int centerId) {
 	    DiagnosticCenter diagnosticCenter = diagnosticCenterRepository.findById(centerId)
 	            .orElseThrow(() -> new DiagnosticCenterNotFoundException("Center not found with id"));
 
 	    // Remove associated tests
-	    diagnosticCenter.setListOfTests(Collections.emptyList()); // Assuming the removal of all tests associated with the center
+	    diagnosticCenter.setListOfTests(Collections.emptyList()); 
 
 	    // Remove appointments or any other related data
 

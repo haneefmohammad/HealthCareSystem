@@ -13,7 +13,7 @@ public class UserDTO {
 	@NotBlank(message = "User Password is Rerquired")
 	private String userPassword;
 	
-	@Pattern(regexp = "\\d{10}",message ="phone number is invalid")
+	@Pattern(regexp = "\\d{10}")
 	private long phoneNumber;
 	private String gender;
 	private int age;
@@ -86,53 +86,5 @@ public class UserDTO {
 	}
 	
 	
-	public static class Builder{
-		//private int userId;
-		private String userName;
-		private String userPassword;
-		private long phoneNumber;
-		private String gender;
-		private int age;
-		private String userRole;
-		private String userEmail;
-		
-		public Builder userName(String userName) {
-            this.userName = userName;
-            return this;
-        }
-
-        public Builder userPassword(String userPassword) {
-            this.userPassword = userPassword;
-            return this;
-        }
-
-        public Builder phoneNumber(long phoneNumber) {
-            this.phoneNumber = phoneNumber;
-            return this;
-        }
-
-        public Builder email(String userEmail) {
-            this.userEmail = userEmail;
-            return this;
-        }
-
-        public Builder gender(String gender) {
-            this.gender = gender;
-            return this;
-        }
-
-        public Builder age(int age) {
-            this.age = age;
-            return this;
-        }
-
-        public Builder userRole(String userRole) {
-            this.userRole = userRole;
-            return this;
-        }
-
-		
-
-	}
 
 }

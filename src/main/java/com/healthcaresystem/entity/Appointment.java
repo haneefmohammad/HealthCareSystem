@@ -37,7 +37,6 @@ public class Appointment {
 	
 	@ManyToOne
 	@JoinColumn(name = "center_id")
-	//@JsonManagedReference(value= "diagnostic_center")
 	private DiagnosticCenter diagnosticCenter;
 	
 	@OneToOne(cascade = CascadeType.PERSIST)
@@ -52,14 +51,7 @@ public class Appointment {
 	public Appointment() {
 		super();
 	}
-//
-//	public Test getListOfTests() {
-//		return listOfTests;
-//	}
-//
-//	public void setListOfTests(Test test) {
-//		this.listOfTests = test;
-//	}
+
 
 	public int getAppointmentId() {
 		return appointmentId;

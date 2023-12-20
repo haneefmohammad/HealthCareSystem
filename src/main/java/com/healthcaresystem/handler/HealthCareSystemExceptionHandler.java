@@ -19,6 +19,7 @@ import com.healthcaresystem.exception.InvalidPhoneNumberException;
 import com.healthcaresystem.exception.InvalidUserNameException;
 import com.healthcaresystem.exception.TestException;
 import com.healthcaresystem.exception.TestNotFoundException;
+import com.healthcaresystem.exception.UserAlreadyHaveAppointmentException;
 import com.healthcaresystem.exception.UserException;
 import com.healthcaresystem.exception.UserNotFoundException;
 
@@ -152,6 +153,14 @@ public class HealthCareSystemExceptionHandler {
     	error.setTimestamp(LocalDateTime.now());
     	return new ResponseEntity<>(error, HttpStatus.valueOf(400));
 	}
-
+	
+	@ExceptionHandler(UserAlreadyHaveAppointmentException.class)
+	public ResponseEntity<ApiError> userAlreadyHaveAppointmentException( UserAlreadyHaveAppointmentException ex)
+	{
+		error.setStatus(HttpStatus.BAD_REQUEST);
+    	error.setMessage(ex.getMessage());
+    	error.setTimestamp(LocalDateTime.now());
+    	return new ResponseEntity<>(error, HttpStatus.valueOf(400));
+	}
 
 }

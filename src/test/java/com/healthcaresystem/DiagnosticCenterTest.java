@@ -251,7 +251,42 @@ public class DiagnosticCenterTest {
 	    assertEquals(0, diagnosticCenter.getListOfTests().size()); // Ensure all tests are removed when the center is removed
 	}
 	 
-	
+	@Test
+    public void testGetTestCenterInfo() {
+        // Mocking diagnostic center data
+        DiagnosticCenter diagnosticCenter1 = new DiagnosticCenter();
+        diagnosticCenter1.setCenterId(1);
+        diagnosticCenter1.setCenterName("Center 1");
+        diagnosticCenter1.setCenterAddress("Address 1");
+        
+        Tests test1 = new Tests();
+        test1.setTestId(101);
+        test1.setTestName("Test A");
+
+        // Associate the test with the diagnostic center
+        diagnosticCenter1.getListOfTests().add(test1);
+
+        // Add more diagnostic centers and tests if needed
+
+        // Mock behavior of diagnosticCenterRepository.findAll()
+        when(diagnosticCenterRepository.findAll()).thenReturn(List.of(diagnosticCenter1 /*, add more diagnostic centers if needed */));
+
+        // Call the method to fetch test center info
+        List<TestCenterInfoDTO> testCenterInfoList = diagnosticCenterService.getTestCenterInfo();
+
+        // Assertions
+        assertNotNull(testCenterInfoList);
+        assertEquals(1, testCenterInfoList.size());
+
+        TestCenterInfoDTO testCenterInfoDTO = testCenterInfoList.get(0);
+        assertEquals(1, testCenterInfoDTO.getCenterId());
+        assertEquals("Center 1", testCenterInfoDTO.getCenterName());
+        assertEquals("Address 1", testCenterInfoDTO.getCenterAddress());
+        assertEquals(101, testCenterInfoDTO.getTestId());
+        assertEquals("Test A", testCenterInfoDTO.getTestName());
+
+       
+    }
 
 }
 

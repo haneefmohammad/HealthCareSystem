@@ -49,7 +49,7 @@ import com.healthcaresystem.serviceimpl.UserService;
         String result = userService.registerNewUser(userDTO);
 
         assertTrue(result.startsWith("User registered successfully with user id:"));
-        // Add more specific assertions if possible
+       
     }
 
     @Test
@@ -169,7 +169,7 @@ import com.healthcaresystem.serviceimpl.UserService;
     @Test
      void testUpdatedUserDetails_InvalidUser() {
         int userId = 1;
-        User updatedUser = new User(/* fill with updated user details */);
+        User updatedUser = new User();
         updatedUser.setUserName("Haneefuddin");
         updatedUser.setAge(25);
         updatedUser.setUserEmail("haneefuddin001@gmail.com");
@@ -180,6 +180,6 @@ import com.healthcaresystem.serviceimpl.UserService;
         assertThrows(UserNotFoundException.class, () -> userService.updatedUserDetails(userId, updatedUser));
     }
 
-    // More test cases for different scenarios in updatedUserDetails method
+    
 }
 

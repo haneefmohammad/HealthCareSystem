@@ -1,10 +1,8 @@
 package com.healthcaresystem.serviceimpl;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +20,10 @@ import com.healthcaresystem.exception.DuplicateAppointmentException;
 import com.healthcaresystem.exception.InvalidAppointmentDateException;
 import com.healthcaresystem.exception.InvalidCenterIdException;
 import com.healthcaresystem.exception.TestNotFoundException;
+import com.healthcaresystem.exception.UserAlreadyHaveAppointmentException;
 import com.healthcaresystem.exception.UserNotFoundException;
 import com.healthcaresystem.repository.AppointmentRepository;
 import com.healthcaresystem.repository.DiagnosticCenterRepository;
-import com.healthcaresystem.repository.TestRepository;
 import com.healthcaresystem.repository.UserRepository;
 
 @Service
@@ -37,8 +35,6 @@ public class AppointmentService {
 	@Autowired
 	private DiagnosticCenterRepository diagnosticCenterRepository;
 
-	@Autowired
-	private TestRepository testRepository;
 
 	@Autowired
 	private AppointmentRepository appointmentRepository;
@@ -63,14 +59,15 @@ public class AppointmentService {
 			throw new DiagnosticCenterNotFoundException("No diagnostic Center");
 		}
 		
+		if(existingUser.get().getAppointment() != null) {
+			throw new UserAlreadyHaveAppointmentException("User already haven an appointment");
+		}
+		
 		List<Tests> availableTests = diagnosticCenter.getListOfTests();
 			
 		if (availableTests.stream().filter(a -> a.getTestId() == testId).count() == 0L)
 			throw new TestNotFoundException("No test found");
-		//if(availableTests.isEmpty() || !availableTests.stream().anyMatch(a -> a.getTestId() == test))
-//		{
-//			throw new TestNotFoundException("No test found");
-//		}
+
 		LocalDateTime currentDateTime = LocalDateTime.now();
 
 		if (appointmentDate == null || appointmentDate.isBefore(currentDateTime)) {
@@ -79,13 +76,14 @@ public class AppointmentService {
 		
 		
 		
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-//		String formattedDateTime = appointmentDate.format(formatter);
+
 		Tests test1 = availableTests.stream().filter(a -> a.getTestId() == testId).findFirst().get();
 		if (appointmentRepository.existsByUserAndTestAndDiagnosticCenterAndDateTime(
                 existingUser.get(), test1, diagnosticCenter, makeAppointmentDTO.getDateTime()) ){
             throw new DuplicateAppointmentException("Duplicate appointment found for user, test, center, and date.");
         }
+//		
+//		
 		
 		
 		Appointment appointment = new Appointment();
@@ -97,7 +95,7 @@ public class AppointmentService {
 
 		
 
-		//appointmentRepository.save(appointment);
+		
 		
 		existingUser.get().setAppointment(appointment);
 		existingUser.get().setDiagnosticCenter(diagnosticCenter);
@@ -106,7 +104,7 @@ public class AppointmentService {
 
 	public List<AppointmentDetailsDTO> getPendingAppointments() {
 		List<Appointment> appointments = appointmentRepository.findAll();
-		return appointments.stream().filter(a -> !a.getApproved()).map(this:: mapTOAppointmentDetails).collect(Collectors.toList());
+		return appointments.stream().filter(a -> !a.getApproved()).map(this::mapTOAppointmentDetails).collect(Collectors.toList());
 		
 	}
 	private AppointmentDetailsDTO mapTOAppointmentDetails(Appointment appointment)
@@ -115,7 +113,6 @@ public class AppointmentService {
 		detailsDTO.setAppointmentId(appointment.getAppointmentId());
 		detailsDTO.setCenterId(appointment.getDiagnosticCenter().getCenterId());
 		detailsDTO.setCenterName(appointment.getDiagnosticCenter().getCenterName());
-		detailsDTO.setAppointmentId(appointment.getAppointmentId());
 		detailsDTO.setTestId(appointment.getTest().getTestId());
 		detailsDTO.setTestName(appointment.getTest().getTestName());
 		detailsDTO.setUserID(appointment.getUser().getUserId());

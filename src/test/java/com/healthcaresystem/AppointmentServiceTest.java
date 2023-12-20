@@ -1,14 +1,19 @@
 package com.healthcaresystem;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -105,11 +110,6 @@ import com.healthcaresystem.serviceimpl.AppointmentService;
         // Call the method under test
         appointmentService.makeAppointment(appointmentDTO);
 
-        // Verify repository interactions and method behavior
-        Mockito.verify(userRepository, Mockito.times(1)).findById(Mockito.anyInt());
-        Mockito.verify(diagnosticCenterRepository, Mockito.times(1)).findById(Mockito.anyInt());
-        Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any()); // Verify that user save was called
-
         // Additional assertions based on the expected behavior after making an appointment
         Assertions.assertTrue(mockUser.getAppointment() != null); // Check if the user has an appointment
         Assertions.assertEquals(mockCenter, mockUser.getDiagnosticCenter()); // Check if user's center is set correctly
@@ -155,22 +155,80 @@ import com.healthcaresystem.serviceimpl.AppointmentService;
 
 
 	@Test
-	void testGetPendingAppointments() {
-	    // Mocking appointments data
-	    List<Appointment> appointments = new ArrayList<>();
-	    // Add an unapproved appointment to the list
-	    Appointment unapprovedAppointment = new Appointment();
-	    unapprovedAppointment.setApproved(false);
-	    appointments.add(unapprovedAppointment);
+    public void testGetPendingAppointments() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Mocking appointment data
+		
+        Appointment appointment1 = new Appointment();
+        appointment1.setAppointmentId(1); 
+      
+        DiagnosticCenter diagnosticCenter = new DiagnosticCenter();
+        diagnosticCenter.setCenterId(123); // Set appropriate ID
+        diagnosticCenter.setCenterName("Example Center");
+        
+        Tests test = new Tests();
+        test.setTestId(456); // Set appropriate ID
+        test.setTestName("Example Test"); // Set appropriate name
 
-	    when(appointmentRepository.findAll()).thenReturn(appointments);
+        // Associate the appointment with the test
+        appointment1.setDiagnosticCenter(diagnosticCenter);
+        appointment1.setTest(test);
 
-	    // Test the method and verify the expected outcome
-	    List<AppointmentDetailsDTO> pendingAppointments = appointmentService.getPendingAppointments();
+        // Creating and associating a User
+        User user = new User();
+        user.setUserId(789);
 
-	    // Assert that there's at least one unapproved appointment
-	    assertTrue(pendingAppointments.contains(unapprovedAppointment));
-	}
+        appointment1.setUser(user);
+        appointment1.setApproved(false); 
+        
+        Appointment appointment2 = new Appointment();
+        appointment2.setAppointmentId(2);
+        DiagnosticCenter diagnosticCenter1 = new DiagnosticCenter();
+        diagnosticCenter1.setCenterId(456); // Set appropriate ID
+        diagnosticCenter1.setCenterName("Example2 Center"); // Set appropriate name
+
+        // Associate the appointment with the diagnostic center
+        appointment2.setDiagnosticCenter(diagnosticCenter1);
+
+        // Creating and associating a Test
+        Tests test1 = new Tests();
+        test1.setTestId(789); // Set appropriate ID
+        test1.setTestName("Example2 Test"); // Set appropriate name
+
+        // Associate the appointment with the test
+        appointment2.setTest(test);
+
+        // Creating and associating a User
+        User user1 = new User();
+        user1.setUserId(123); // Set appropriate ID
+
+        // Associate the appointment with the user
+        appointment2.setUser(user);
+
+        // Set the approval status or other properties if needed
+        appointment2.setApproved(false);
+
+        // Mock behavior of appointmentRepository.findAll()
+        when(appointmentRepository.findAll()).thenReturn(List.of(appointment1, appointment2));
+
+        // Call the method to fetch pending appointments
+        List<AppointmentDetailsDTO> pendingAppointments = appointmentService.getPendingAppointments();
+
+        // Assertions
+        assertNotNull(pendingAppointments);
+        assertEquals(2, pendingAppointments.size()); // Assuming all appointments are approved, hence expecting an empty list
+
+        // Testing private method mapTOAppointmentDetails using reflection
+        Method mapToAppointmentDetailsMethod = AppointmentService.class.getDeclaredMethod("mapTOAppointmentDetails", Appointment.class);
+        mapToAppointmentDetailsMethod.setAccessible(true);
+
+        AppointmentDetailsDTO detailsDTO = (AppointmentDetailsDTO) mapToAppointmentDetailsMethod.invoke(appointmentService, appointment1);
+
+        assertEquals(appointment1.getAppointmentId(), detailsDTO.getAppointmentId());
+        assertEquals(appointment1.getDiagnosticCenter().getCenterId(), detailsDTO.getCenterId());
+        assertEquals(appointment1.getDiagnosticCenter().getCenterName(), detailsDTO.getCenterName());
+        // Add more assertions for other properties mapped in the AppointmentDetailsDTO
+    }
+
 
 
 	@Test

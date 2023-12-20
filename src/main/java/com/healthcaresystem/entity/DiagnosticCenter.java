@@ -42,10 +42,10 @@ public class DiagnosticCenter {
 	}
 
 	@OneToMany(mappedBy = "diagnosticCenter")
-	// @JsonBackReference(value= "diagnostic_center")
+	
 	private List<Appointment> appointmentList = new ArrayList<>();
 
-	// @OneToMany(mappedBy = "diagnosticCenter",cascade = CascadeType.ALL)
+	
 	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "center_test", joinColumns = @JoinColumn(name = "center_id"), inverseJoinColumns = @JoinColumn(name = "test_id"))
@@ -98,7 +98,7 @@ public class DiagnosticCenter {
 		this.centerName = centerName;
 		this.appointmentList = appointmentList;
 		this.listOfTests = listOfTests;
-		// this.userList = userList;, List<User> userList
+		
 	}
 
 	public DiagnosticCenter() {
