@@ -1,0 +1,69 @@
+ADMIN CONTROLLER
+POST:
+http://localhost:8091/admin/approveAppointments/{appointmentId}/{centerId}
+
+POST:
+http://localhost:8091/admin/addTest/{centerId}
+{
+    "testName" : "Test Name"
+}
+
+POST:
+http://localhost:8091/admin/addCenter
+{
+   "centername":"apollo",
+   "centerAddress":"banglore"
+}
+
+GET:
+http://localhost:8091/admin/pendingAppointments
+
+GET:
+http://localhost:8091/admin/allCenters
+
+DELETE:
+http://localhost:8091/admin/{centerId}/removeTest/{testId}
+
+DELETE:
+http://localhost:8091/admin/removeCenter/{centerId}
+
+DELETE:
+http://localhost:8091/admin/delete/{userId}
+
+
+CUSTOMER-CONTROLLER:
+
+POST:
+http://localhost:8091/users/register
+{
+    "userName": "Name",
+    "userPassword": "password@123",
+    "userEmail": "email@gmail.com",
+    "phoneNumber": 9123456789,
+    "age": 22,
+    "gender": "Female"
+}
+
+POST:
+http://localhost:8091/users/login
+
+{
+	"email":"email@gmail.com",
+	"password":"password@123"
+}
+
+
+POST:
+http://localhost:8091/users/login/makeAppointment
+{
+  "userId": 5,
+  "centerId": 3,
+  "testId":2,
+  "dateTime": "2023-12-20T12:12"
+}
+
+
+GET:
+
+http://localhost:8091/users/login/viewCenterTest
+
